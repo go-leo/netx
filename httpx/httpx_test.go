@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{Response: resp}.TextBody()
+	body, err := ResponseHelper{resp: resp}.TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -43,7 +43,7 @@ func TestHeader(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{Response: resp}.TextBody()
+	body, err := ResponseHelper{resp: resp}.TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -63,7 +63,7 @@ func TestBasicAuth(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{Response: resp}.TextBody()
+	body, err := ResponseHelper{resp: resp}.TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -83,7 +83,7 @@ func TestBearerAuth(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{Response: resp}.TextBody()
+	body, err := ResponseHelper{resp: resp}.TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -97,7 +97,7 @@ func TestCache(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	helper := ResponseHelper{Response: resp}
+	helper := ResponseHelper{resp: resp}
 	statusCode := helper.StatusCode()
 	t.Log(statusCode)
 	lastModified := helper.LastModified()
@@ -113,7 +113,7 @@ func TestCache(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err = PooledClient().Do(request)
 	assert.NoError(t, err)
-	helper = ResponseHelper{Response: resp}
+	helper = ResponseHelper{resp: resp}
 	statusCode = helper.StatusCode()
 	t.Log(statusCode)
 
@@ -125,7 +125,7 @@ func TestCache(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err = PooledClient().Do(request)
 	assert.NoError(t, err)
-	helper = ResponseHelper{Response: resp}
+	helper = ResponseHelper{resp: resp}
 	statusCode = helper.StatusCode()
 	t.Log(statusCode)
 
