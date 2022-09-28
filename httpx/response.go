@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -84,7 +85,11 @@ func (helper *ResponseHelper) ObjectBody(body any, unmarshal func([]byte, any) e
 	if err != nil {
 		return err
 	}
-	return unmarshal(data, body)
+	err = unmarshal(data, body)
+	if err != nil {
+		err = fmt.Errorf("failed to unmarshal body, body is %s, %w", data, err)
+	}
+	return err
 }
 
 func (helper *ResponseHelper) JSONBody(body any) error {
