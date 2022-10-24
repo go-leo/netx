@@ -23,13 +23,14 @@ import (
 )
 
 type RequestBuilder struct {
+	err     error
 	method  string
 	uri     *url.URL
 	queries url.Values
 	headers http.Header
 	body    io.Reader
 	cookies []*http.Cookie
-	err     error
+	req     *http.Request
 }
 
 func (builder *RequestBuilder) Method(method string) *RequestBuilder {
@@ -394,10 +395,7 @@ func (builder *RequestBuilder) Cookies(cookies ...*http.Cookie) *RequestBuilder 
 	return builder
 }
 
-func (builder *RequestBuilder) Build(ctx context.Context) (*http.Request, error) {
-	if builder.err != nil {
-		return nil, builder.err
-	}
+func (builder *RequestBuilder) build(ctx context.Context) (*http.Request, error) {
 	if stringx.IsBlank(builder.method) {
 		return nil, errors.New("method is blank")
 	}
@@ -426,5 +424,24 @@ func (builder *RequestBuilder) Build(ctx context.Context) (*http.Request, error)
 	for _, cookie := range builder.cookies {
 		req.AddCookie(cookie)
 	}
+	builder.req = req
 	return req, nil
+}
+
+func (builder *RequestBuilder) Build(ctx context.Context) (*http.Request, error) {
+	if builder.err != nil {
+		return nil, builder.err
+	}
+	return builder.build(ctx)
+}
+
+func (builder *RequestBuilder) Execute(ctx context.Context, cli *http.Client) *ResponseHelper {
+	if builder.err != nil {
+		return NewResponseHelper(nil, builder.err)
+	}
+	req, err := builder.build(ctx)
+	if err != nil {
+		return NewResponseHelper(nil, err)
+	}
+	return NewResponseHelper(cli.Do(req))
 }

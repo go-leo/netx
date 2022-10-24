@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{resp: resp}.TextBody()
+	body, err := (&ResponseHelper{resp: resp}).TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -43,7 +43,7 @@ func TestHeader(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{resp: resp}.TextBody()
+	body, err := (&ResponseHelper{resp: resp}).TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -63,7 +63,7 @@ func TestBasicAuth(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{resp: resp}.TextBody()
+	body, err := (&ResponseHelper{resp: resp}).TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
@@ -83,50 +83,8 @@ func TestBearerAuth(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := PooledClient().Do(request)
 	assert.NoError(t, err)
-	body, err := ResponseHelper{resp: resp}.TextBody()
+	body, err := (&ResponseHelper{resp: resp}).TextBody()
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
-}
-
-func TestCache(t *testing.T) {
-	request, err := new(RequestBuilder).
-		Get().
-		URLString("http://httpbin.org/cache").
-		Build(context.Background())
-	assert.NoError(t, err)
-	resp, err := PooledClient().Do(request)
-	assert.NoError(t, err)
-	helper := ResponseHelper{resp: resp}
-	statusCode := helper.StatusCode()
-	t.Log(statusCode)
-	lastModified := helper.LastModified()
-	t.Log(lastModified)
-	etag := helper.Etag()
-	t.Log(etag)
-
-	request, err = new(RequestBuilder).
-		Get().
-		URLString("http://httpbin.org/cache").
-		IfModifiedSince(lastModified).
-		Build(context.Background())
-	assert.NoError(t, err)
-	resp, err = PooledClient().Do(request)
-	assert.NoError(t, err)
-	helper = ResponseHelper{resp: resp}
-	statusCode = helper.StatusCode()
-	t.Log(statusCode)
-
-	request, err = new(RequestBuilder).
-		Get().
-		URLString("http://httpbin.org/cache").
-		IfNoneMatch(etag).
-		Build(context.Background())
-	assert.NoError(t, err)
-	resp, err = PooledClient().Do(request)
-	assert.NoError(t, err)
-	helper = ResponseHelper{resp: resp}
-	statusCode = helper.StatusCode()
-	t.Log(statusCode)
-
 }
