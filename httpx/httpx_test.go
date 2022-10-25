@@ -28,6 +28,20 @@ func TestGet(t *testing.T) {
 	t.Log(resp.Header)
 }
 
+func TestGet_EXC(t *testing.T) {
+	body, err := new(RequestBuilder).
+		Get().
+		URLString("http://httpbin.org/get").
+		Query("name", "jack").
+		AddQuery("name", "zhaoyi").
+		QueryString("class=322&id=1").
+		Queries(url.Values{"money": []string{"12345"}}).
+		RemoveQuery("money").
+		Execute(context.Background(), PooledClient()).TextBody()
+	assert.NoError(t, err)
+	t.Log(body)
+}
+
 func TestHeader(t *testing.T) {
 	request, err := new(RequestBuilder).
 		Get().
@@ -87,4 +101,20 @@ func TestBearerAuth(t *testing.T) {
 	assert.NoError(t, err)
 	t.Log(body)
 	t.Log(resp.Header)
+}
+
+func TestBearerAuth_Exec(t *testing.T) {
+	body, err := new(RequestBuilder).
+		Get().
+		URLString("http://httpbin.org/bearer").
+		QueryString("class=322&id=1").
+		Query("name", "jack").
+		Header("id", "12345").
+		AddHeader("id", "45678").
+		Headers(http.Header{"token": []string{"3344555"}}).
+		BearerAuth("this is bearer auth").
+		Execute(context.Background(), PooledClient()).TextBody()
+	assert.NoError(t, err)
+	assert.NoError(t, err)
+	t.Log(body)
 }

@@ -75,7 +75,7 @@ func (helper *ResponseHelper) Trailer() (http.Header, error) {
 
 func (helper *ResponseHelper) Cookies() ([]*http.Cookie, error) {
 	if helper.err != nil {
-		return make([]*http.Cookie, 0), helper.err
+		return nil, helper.err
 	}
 	return helper.cookies, nil
 }
