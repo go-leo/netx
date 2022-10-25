@@ -33,6 +33,10 @@ type RequestBuilder struct {
 	req     *http.Request
 }
 
+func NewRequestBuilder() *RequestBuilder {
+	return new(RequestBuilder)
+}
+
 func (builder *RequestBuilder) Method(method string) *RequestBuilder {
 	if builder.err != nil {
 		return builder
