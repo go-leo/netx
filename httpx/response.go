@@ -116,11 +116,7 @@ func (helper *ResponseHelper) JSONBody(body any) error {
 	if helper.err != nil {
 		return helper.err
 	}
-	return helper.ObjectBody(body, func(data []byte, v any) error {
-		jsonEnc := json.NewEncoder(bytes.NewBuffer(data))
-		jsonEnc.SetEscapeHTML(false)
-		return jsonEnc.Encode(v)
-	})
+	return helper.ObjectBody(body, json.Unmarshal)
 }
 
 func (helper *ResponseHelper) XMLBody(body any) error {
