@@ -268,7 +268,13 @@ func (builder *RequestBuilder) ObjectBody(body any, marshal func(any) ([]byte, e
 }
 
 func (builder *RequestBuilder) JSONBody(body any) *RequestBuilder {
-	return builder.ObjectBody(body, json.Marshal, "application/json")
+	return builder.ObjectBody(body, func(v any) ([]byte, error) {
+		buffer := &bytes.Buffer{}
+		encoder := json.NewEncoder(buffer)
+		encoder.SetEscapeHTML(false)
+		err := encoder.Encode(v)
+		return buffer.Bytes(), err
+	}, "application/json")
 }
 
 func (builder *RequestBuilder) XMLBody(body any) *RequestBuilder {
