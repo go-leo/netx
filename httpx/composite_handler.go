@@ -5,26 +5,27 @@ import (
 )
 
 type CompositeHandler struct {
-	handlers []*handlerWrapper
+	matchableHandlers []*matchableHandler
 }
 
 func (h *CompositeHandler) AddHandler(handler http.Handler, match func(request *http.Request) bool) {
-	h.handlers = append(h.handlers, &handlerWrapper{handler: handler, match: match})
+	h.matchableHandlers = append(h.matchableHandlers, &matchableHandler{handler: handler, match: match})
 }
 
 func (h *CompositeHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	for _, handler := range h.handlers {
-		if handler.match(request) {
-			handler.handler.ServeHTTP(writer, request)
+	for _, matchableHandler := range h.matchableHandlers {
+		if matchableHandler.match(request) {
+			matchableHandler.handler.ServeHTTP(writer, request)
+			return
 		}
 	}
 }
 
-type handlerWrapper struct {
+type matchableHandler struct {
 	handler http.Handler
 	match   func(request *http.Request) bool
 }
 
-func (h *handlerWrapper) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (h *matchableHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	h.handler.ServeHTTP(writer, request)
 }
